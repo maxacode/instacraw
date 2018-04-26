@@ -64,12 +64,14 @@ instaurl = ("https://www.instagram.com/")
     #Catching if file exists
 #try:
         #usernames from file
-with open('users.txt','r')as f:
-    usernames = [line.strip() for line in f]
-    print(usernames)
-#usernames = open('users.txt','r').read()
-#print(usernames)
-        #Getting number of users
+usrFile = "users.txt"
+if os.path.isfile(usrFile):
+    with open(usrFile,'r')as f:
+        usernames = [line.strip() for line in f]
+        print(usernames)
+else:
+    usernames = open(usrFile,"w+")
+
     #try:
 numusers = sum(1 for line in open('users.txt'))
 print(numusers)
@@ -214,3 +216,5 @@ for run in range(numusers):
        # print(searchcount)
         #searchcount = searchcount + 1
 
+print("All Done, Press enter to Exit")
+input()
