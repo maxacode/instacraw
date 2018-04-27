@@ -114,23 +114,25 @@ for run in range(numusers):
                     if len(tempurl) == 11:
                         picid = "https://instagram.com/p/" + data2[instaID]
 
-                        #Adding all URL to seperate list
-                        #picid2 = picid.split()
-
                         datalike = urllib.request.urlopen(picid).read()
                         datalike1 = datalike.decode("utf-8")
-                        datalike2 = re.sub(r"[^\w]", " ", datalike1).split()
+
+                        datalike2 = re.search('Likes',datalike1)
+                        start = datalike2.start()-10
+                        end = datalike2.start()
+                        finalLike = datalike1[start:end]
 
 
-                        for l, p in enumerate(datalike2):
-                            if p == likeSearch:
-                                likeID = l - 1
-                                finalLike = (datalike2[likeID])
+                        datalike2 = re.search('="', finalLike)
+                        start = datalike2.end()
+                        #end = finalLike2.end()
+                        finalLike3 = finalLike[start:]
+                        #print(finalLike3)
 
 
 
                          #Making FINAL STRING
-                        final = (str(int) + " | " + str(datetime.datetime.now()) + " | " +  usernames[numofuser] + " | " + finalLike  + " | " + picid)
+                        final = (str(int) + " | " + str(datetime.datetime.now()) + " | " +  usernames[numofuser] + " | " + finalLike3  + " | " + picid)
                         #Appending all links to master file
                         alllinks.append(picid)
                         #Appeding FINAL to CURRENT USER
@@ -143,24 +145,25 @@ for run in range(numusers):
                         picid = "https://instagram.com/p/" + data2[instaID] + "-" + data2[instaID2]
 
 
-                        #Adding all URL to seperate list
-                        #picid2 = picid.split()
-
-
                         datalike = urllib.request.urlopen(picid).read()
                         datalike1 = datalike.decode("utf-8")
-                        datalike2 = re.sub(r"[^\w]", " ", datalike1).split()
+
+                        datalike2 = re.search('Likes',datalike1)
+                        start = datalike2.start()-10
+                        end = datalike2.start()
+                        finalLike = datalike1[start:end]
 
 
-                        for l, p in enumerate(datalike2):
-                            if p == likeSearch:
-                                likeID = l - 1
-                                finalLike = (datalike2[likeID])
+                        datalike2 = re.search('="', finalLike)
+                        start = datalike2.end()
+                        #end = finalLike2.end()
+                        finalLike3 = finalLike[start:]
+                        #print(finalLike3)
 
 
 
                          #Making FINAL STRING
-                        final = (str(int) + " | " + str(datetime.datetime.now()) + " | " +  usernames[numofuser] + " | " + finalLike  + " | " + picid)
+                        final = (str(int) + " | " + str(datetime.datetime.now()) + " | " +  usernames[numofuser] + " | " + finalLike3  + " | " + picid)
                         #Appending all links to master file
                         alllinks.append(picid)
                         #Appeding FINAL to CURRENT USER
@@ -201,6 +204,7 @@ for run in range(numusers):
      #Keep Going with all the USERNAMES
         numofuser = numofuser + 1
     except Exception as error:
+         currentDate = datetime.datetime.now().strftime("%m-%d-%y")
          print(error)
          curError.append(usernames[numofuser] + " | " + str(error) )
          numofuser = numofuser + 1
