@@ -14,7 +14,9 @@
 #3) Schedule via CHRON/Scheduler
 #4) Sight back and drink some coffee.
 
-
+#Additional installations:
+# apt install python-pip
+# pip install -U selenium
 
 #Importin RE for searchign and URLLIP.rfequest to READ URL's
 import re
@@ -22,6 +24,8 @@ import urllib.request
 import time
 import datetime
 import os
+from selenium import webdriver
+
 
 ####CODE STARTEED####
 
@@ -35,11 +39,14 @@ instaurl = ("https://www.instagram.com/")
 curError = []
 #Bad link errors go here
 notGoodLink = []
-#Backup search string search = ',"shortcode":"'
-search2 = "shortcode"
+#searching for this to take PIC ID before it.
+search2 = "edge_media_to_comment"
+#Searching for taken-by
+search = "taken-by"
 #Var for what keyword to search for the LIKES info
 likeSearch = "Likes"
-
+#var to delay when program scrolls down to new page.
+delayLoad = 2
 
 #looks if users.txt exists if not then creates it.
 usrFile = "users.txt"
@@ -62,6 +69,7 @@ print("Starting the Scraping Process")
 #Loop that runs for every USER in teh file
 for run in range(numusers):
     try:
+
         #Var to show how many PICS Per User
         int = 0
         #Array for final result
@@ -70,25 +78,45 @@ for run in range(numusers):
         #Making full URL with username
         fullurl = instaurl + usernames[numofuser]
 
-        #getting website source into variables.
-        data = urllib.request.urlopen(fullurl).read()
-        #decoding to UTF-8
-        data1 = data.decode("utf-8")
+
+        driver = webdriver.Firefox(executable_path="geckodriver/geckodriver")
+        driver.get(fullurl)
+
+        #Loop for infinite scrolling to stop when done.
+        loopCounter = 0
+        lastHeight = driver.execute_script("return document.body.scrollHeight")
+        while True:
+            if loopCounter > 5000:
+                break; # If not much posts it it just stops.
+
+            for x in range(0,2):
+                driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+                time.sleep(delayLoad)
+                newHeight = driver.execute_script("return document.body.scrollHeight")
+
+            if newHeight == lastHeight:
+                break
+            lastHeight = newHeight
+            loopCounter = loopCounter + 1
+
+        #putting page source into var
+        data1 = driver.page_source
+
         #Parsing and adding all to list
         data2 = re.sub(r"[^\w-]", " ", data1).split()
-
+        #print(data2)
         #Getting the count for number of posts for REFERENCE in later loop.
-        searchcount = data1.count(search2)
-        #print(searchcount)
+        searchcount = data2.count(search2) + data2.count(search)
+        print(searchcount)
 
         #Starting loop to find all the URL's on the site.
-        if search2 in data2:
+        if search2 or search in data2:
             for i, j in enumerate(data2):
-                if j == search2:
+                if j == search2 or j == search:
                     #Int to have numbers in the results
                     int = int + 1
                     #Found the INDEX right before the URL value so adding one to get final URL INDEX
-                    instaID = i +1
+                    instaID = i - 1
                     #Making full URL for all the PIC's
                     picid = "https://instagram.com/p/" + data2[instaID]
                     #Getting website source into variables
@@ -109,14 +137,18 @@ for run in range(numusers):
                     finalLike3 = finalLike[start:]
 
                      #Making FINAL STRING
-                    final = (str(int) + " | " + str(datetime.datetime.now()) + " | " +  usernames[numofuser] + " | " + finalLike3  + " | " + picid)
+                    final = (str(int) + " | " + str(datetime.datetime.now()) + " | " +usernames[numofuser] + " | " +finalLike3+ " | " + picid)
                     #Appending all links to master file
                     alllinks.append(picid)
                     #Appeding FINAL to CURRENT USER
                     finalUserAll.append(final)
-                    
+
+                    driver.quit()
+
+
         #Reseting for current user.
         int = 0
+
         #writing to master file and making sure the URL is not already in there.
         outAllLinks = open("AllLinks.txt","a")
         for line in alllinks:
@@ -162,4 +194,4 @@ for run in range(numusers):
 
 
 print("All Done, Thanks!")
-input()
+#input()
