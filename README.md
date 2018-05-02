@@ -2,9 +2,9 @@
 #Max Derevencha - 04/20/2018
 
 What it does: 
-From a list of users in a file it gets RECENT 12 PIC URL's and (LIKE's) for those POSTs. 
+From a list of users in a file it gets all of their post's URL's and LIKE's for those POSTs. 
 
-Tested on: Python 3.6: Ubuntu, Windows 10.
+Tested on: Python 3.5 - 3.6: Ubuntu, Windows 10.
 
 
 InstaCrawl Info/Instructions:
@@ -12,27 +12,28 @@ InstaCrawl Info/Instructions:
 2) Run manually OR
 3) Schedule via CHRON/Scheduler
 4) Sight back and drink some coffee. 
-5) Takes about 1.5 seconds (Depending on quality of USERNAMES) to get URL and LIKES for each user. 
-            ex: 5 users * 10 pics each = 50total * 1.5sec = 75sec or 1min 15sec. 
+5) Takes about 2 seconds (Depending on quality of USERNAMES and how many posts) to get URL and LIKES for each user. 
+            ex: 5 users * 10 pics each = 50total * 2sec = 100sec  or 1min 40sec. 
 
 
 
 Features:
-0) Completely HANDS OFF after USERS specified. 
+0) Completely HANDS OFF after USERS in file specified. 
 1) Master database of all scraped URL's.
-2) Creates separate folders for all users. 
+2) Gets all the likes for all the posts for that specific user.
 3) Create file under Users folder with current date. -Adds on if run same day multiple times. 
-4) Specifies users for user folder. 
-5) Gets Recent 12 PIC URL's of all USERS
-6) Logs most ERRORs to ErrorLOGS Folder
+4) No duplicates in master databse or user file.
+5) Gets all user's post URL's for all users in file.
+6) Logs most ERRORs to ErrorLOGS Folder to todays date file. 
 
 
 
 
 TODO:
+
 0) OPTIMIZE for SPEED LIKE CRAZY
-0) MAKE CLASSES or DEF's. 
-1) Get # of likes for each picture. 
+0) MAKE DEF's
+1) Get # of views for each video. 
 2) Rotating Instagram Accounts for PRIVATE Profile USE.
 3) Rotating Proxy Capabilities - with user specified times.
 4) INI for more customization. 
