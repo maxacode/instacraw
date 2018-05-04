@@ -1,6 +1,6 @@
 # Max Derevencha - 417Code
-# 4/24/2018 -
-# From a list of users in a file it gets RECENT 12 PIC URL's and (LIKE's) for those PICs.
+# 4/24/2018 - 5/04/2018
+# From a list of users in a file it gets all post URL's and (LIKE's) for those PICs.
 # InstaCrawl Info/Instructions:
 
 # Tested on: Python 3.5-6: Ubuntu, Windows 10.
@@ -13,10 +13,6 @@
 # 2) Run manually
 # 3) Schedule via CHRON/Scheduler
 # 4) Sight back and drink some coffee.
-
-# Additional installations:
-# apt install python-pip
-# pip install -U selenium
 
 # Importin RE for searchign and URLLIP.rfequest to READ URL's
 import re
@@ -44,7 +40,7 @@ search2 = "edge_media_to_comment"
 # Searching for taken-by
 search = "taken-by"
 # Var for what keyword to search for the LIKES info
-likeSearch = "Likes"
+likeSearch = "Likes,"
 # var to delay when program scrolls down to new page.
 delayLoad = 2
 #pic id
@@ -100,35 +96,27 @@ for run in range(numusers):
     #driver = webdriver.Firefox(executable_path="geckodriver/geckodriver")
     driver.get(fullurl)
 
-
-
     counter = 0
+    scroll = 1
+    while counter < 100:
 
-    while counter < 60:
-        ##print("Scrolling Again")
-        ##print("----------------------------------------------------------------------")
         print("Total pics so far: " + str(totalPic))
 
         #scrolling this page 3
-        for x in range(0, 3):
-            driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-            time.sleep(delayLoad)
-            newHeight = driver.execute_script("return document.body.scrollHeight")
-
+        if scroll == 1:
+            for x in range(0, 3):
+                driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+                time.sleep(delayLoad)
+                newHeight = driver.execute_script("return document.body.scrollHeight")
 
         # putting page source into var
         data1 = driver.page_source
 
         # Parsing and adding all to list
         data2 = re.sub(r"[^\w-]", " ", data1).split()
-        #print(data2)
-        # Getting the count for number of posts for REFERENCE in later loop.
-        ##searchcount = data2.count(search2) + data2.count(search)
-        ##print("Search Count: " + str(searchcount))
 
         #Var for this data source since new page source is gotten every time it scrolls.
         instaID = 0
-        ##print("Insta ID: " + str(instaID))
 
         try:
             if search2 or search in data2: # Starting loop to find all the URL's on the site.
@@ -136,12 +124,6 @@ for run in range(numusers):
                 for i, j in enumerate(data2):
                     ##print("For i, j in enumerate")
                     if j == search2 or j == search:
-                        ##print('if J == search ')
-
-                        ##print("I: " + str(i))
-                        ##print("instaID: " + str(instaID))
-                        ##print("Total PIC: " + str(totalPic))
-
                         # Int to have numbers in the results
                         int = int + 1
 
@@ -154,10 +136,9 @@ for run in range(numusers):
                             # Making full URL for all the PIC's
                             picid = "https://instagram.com/p/" + data2[instaID]
 
-                            #print("pic id: " + str(picid))
-
                             # Getting website source into variables
                             datalike = urllib.request.urlopen(picid).read()
+
                             # decding to UTF-8
                             datalike1 = datalike.decode("utf-8")
                             # Finding keyword stored in LIKESEARCH for the likes INDEX
@@ -199,6 +180,7 @@ for run in range(numusers):
 
                             #Reseting the counter cuz we have found some more that are not in list.
                             counter = 0
+                            scroll = 1
 
                         else:
                             #If instaID already in list then add to counter and continue
@@ -213,6 +195,7 @@ for run in range(numusers):
                     ### END OF IF J IN SEARCH or SEARCH2
                     elif j == ifPrivate:
                         i = i + 1
+                        
                         if data2[i] == "true":
                             curError = ("No Such user or Private profile: '" + usernames[numofuser] + "', Delete from list so process can run faster")
 
@@ -233,13 +216,13 @@ for run in range(numusers):
                             errorOut.write("\n")
                             errorOut.close()
 
-                            counter = 61
-
+                            counter = 1000
 
                 ### END OF Enumerating i for J in data2
 
         except Exception as error:
 
+            scroll = 0
          #   currentDate = datetime.datetime.now().strftime("%m-%d-%y")
 
             lineError = "Error on line: {}".format(sys.exc_info()[-1].tb_lineno)
@@ -262,10 +245,7 @@ for run in range(numusers):
             i = i - 50
             instaID = instaID - 50
 
-        #continue
-
     ### END OF WHILE
-
 
     # Reseting for current user.
     int = 0
@@ -273,11 +253,11 @@ for run in range(numusers):
     # writing to master file and making sure the URL is not already in there.
     outAllLinks = open("AllLinks.txt", "a")
     for line in alllinks:
-        #if alllinks[int] in open("AllLinks.txt").read():
-         #   int = int + 1
-        #else:
-        outAllLinks.write(line)
-        outAllLinks.write("\n")
+        if alllinks[int] in open("AllLinks.txt").read():
+            int = int + 1
+        else:
+            outAllLinks.write(line)
+            outAllLinks.write("\n")
     outAllLinks.close()
 
     #Checking list of non users and making sure we dont create folders/files for them.
@@ -293,25 +273,8 @@ for run in range(numusers):
             outfinalUserAll.write("\n")
         outfinalUserAll.close()
 
-    # Stopping browser driver for this user.
-    #driver.quit()
-
     # Keep Going with all the USERNAMES
     numofuser = numofuser + 1
 
-    ### TRY AND EXCEPT HERE
-
-    #except Exception as error:
-    #currentDate = datetime.datetime.now().strftime("%m-%d-%y")
-    #print(error)
-    #curError2 = (str(datetime.datetime.now()) + " | " + usernames[numofuser] + " | " + str(error))
-    #curError.append(curError2)
-    #continue
-
 driver.quit()
-
-
-
-
 print("All Done, Thanks!")
-# input()
