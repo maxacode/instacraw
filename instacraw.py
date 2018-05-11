@@ -1,6 +1,6 @@
 # Max Derevencha - 417Code
-# 4/24/2018 - 5/04/2018
-# From a list of users in a file it gets all post URL's and (LIKE's) for those PICs.
+# 4/24/2018 -
+# From a list of users in a file it gets RECENT 12 PIC URL's and (LIKE's) for those PICs.
 # InstaCrawl Info/Instructions:
 
 # Tested on: Python 3.5-6: Ubuntu, Windows 10.
@@ -13,6 +13,10 @@
 # 2) Run manually
 # 3) Schedule via CHRON/Scheduler
 # 4) Sight back and drink some coffee.
+
+# Additional installations:
+# apt install python-pip
+# pip install -U selenium
 
 # Importin RE for searchign and URLLIP.rfequest to READ URL's
 import re
@@ -55,6 +59,10 @@ currentDate = datetime.datetime.now().strftime("%m-%d-%y")
 ifPrivate = "is_private"
 #List of private or non existing users:
 notUser = []
+#Now Date
+nowDate = datetime.datetime.now()
+#ErrorHappen
+errorHapp= "NO Error's this Run"
 
 # looks if users.txt exists if not then creates it.
 usrFile = "users.txt"
@@ -76,9 +84,12 @@ print("Starting the Scraping Process")
 
 driver = webdriver.Firefox(executable_path="geckodriver/geckodriver")
 
+startTime= time.time()
+
 # Loop that runs for every USER in teh file
 for run in range(numusers):
-
+    print(str(datetime.datetime.now()))
+    
     print("Starting process for user: " + usernames[numofuser])
 
     # total pic
@@ -96,10 +107,14 @@ for run in range(numusers):
     #driver = webdriver.Firefox(executable_path="geckodriver/geckodriver")
     driver.get(fullurl)
 
+
+
     counter = 0
     scroll = 1
-    while counter < 100:
 
+    while counter < 100:
+        ##print("Scrolling Again")
+        ##print("----------------------------------------------------------------------")
         print("Total pics so far: " + str(totalPic))
 
         #scrolling this page 3
@@ -109,14 +124,20 @@ for run in range(numusers):
                 time.sleep(delayLoad)
                 newHeight = driver.execute_script("return document.body.scrollHeight")
 
+
         # putting page source into var
         data1 = driver.page_source
 
         # Parsing and adding all to list
         data2 = re.sub(r"[^\w-]", " ", data1).split()
+        #print(data2)
+        # Getting the count for number of posts for REFERENCE in later loop.
+        ##searchcount = data2.count(search2) + data2.count(search)
+        ##print("Search Count: " + str(searchcount))
 
         #Var for this data source since new page source is gotten every time it scrolls.
         instaID = 0
+        ##print("Insta ID: " + str(instaID))
 
         try:
             if search2 or search in data2: # Starting loop to find all the URL's on the site.
@@ -124,6 +145,12 @@ for run in range(numusers):
                 for i, j in enumerate(data2):
                     ##print("For i, j in enumerate")
                     if j == search2 or j == search:
+                        ##print('if J == search ')
+
+                        ##print("I: " + str(i))
+                        ##print("instaID: " + str(instaID))
+                        ##print("Total PIC: " + str(totalPic))
+
                         # Int to have numbers in the results
                         int = int + 1
 
@@ -136,8 +163,13 @@ for run in range(numusers):
                             # Making full URL for all the PIC's
                             picid = "https://instagram.com/p/" + data2[instaID]
 
+                            #print("pic id: " + str(picid))
+			    
+			    
                             # Getting website source into variables
                             datalike = urllib.request.urlopen(picid).read()
+
+
 
                             # decding to UTF-8
                             datalike1 = datalike.decode("utf-8")
@@ -215,19 +247,20 @@ for run in range(numusers):
                             errorOut.write(curError)
                             errorOut.write("\n")
                             errorOut.close()
+                            
+                            counter = 101
 
-                            counter = 1000
 
                 ### END OF Enumerating i for J in data2
 
         except Exception as error:
-
-            scroll = 0
+		
+            scroll = 0 
          #   currentDate = datetime.datetime.now().strftime("%m-%d-%y")
 
             lineError = "Error on line: {}".format(sys.exc_info()[-1].tb_lineno)
 
-            curError = (str(datetime.datetime.now()) + " | " + usernames[numofuser] + " | " + str(picid) + " | " + str(error) + " | " + lineError)
+            curError = (str(datetime.datetime.now()) + " | " + usernames[numofuser] + " | " + "Post Number: " + str(totalPic) + " | " +  str(picid) + " | " + str(error) + " | " + lineError)
             print(curError)
 
             #curError.append(curError2)
@@ -242,10 +275,14 @@ for run in range(numusers):
             errorOut.close()
 
             #Movign iteration back so it can try again.
-            i = i - 50
+            i = i - 300
+            errorHapp = ("Error has Accured, Check Error Files")
             instaID = instaID - 50
 
+        #continue
+
     ### END OF WHILE
+
 
     # Reseting for current user.
     int = 0
@@ -258,12 +295,15 @@ for run in range(numusers):
         else:
             outAllLinks.write(line)
             outAllLinks.write("\n")
+            int = int + 1
     outAllLinks.close()
 
+
+    timeday = str(datetime.datetime.now())
     #Checking list of non users and making sure we dont create folders/files for them.
     if usernames[numofuser] not in notUser:
         # writing to users file.
-        filename = "AllData/" + usernames[numofuser] + "/" + currentDate + ".txt"
+        filename = "AllData/" + usernames[numofuser] + "/" + timeday + ".txt"
         directory = "AllData/" + usernames[numofuser]
         if not os.path.exists(directory):
             os.makedirs(directory)
@@ -273,8 +313,27 @@ for run in range(numusers):
             outfinalUserAll.write("\n")
         outfinalUserAll.close()
 
-    # Keep Going with all the USERNAMES
+    # Stopping browser driver for this user.
+    #Adding to the # for  all the USERNAMES
     numofuser = numofuser + 1
 
+
 driver.quit()
+print(str(datetime.datetime.now()))
+endTime = time.time() - startTime
+timeRun = ("Script took: " + str(endTime))
+
+#Writing to Log File
+logFile = open("LogFile.txt", "a")
+logFile.write("Start Time: " + str(nowDate))
+logFile.write("\n")
+logFile.write(timeRun)
+logFile.write("\n")
+logFile.write(errorHapp)
+logFile.write("\n")
+logFile.write("------------------------------------------------")
+logFile.write("\n")
+
+print("Script took: " + str(endTime))
 print("All Done, Thanks!")
+#input()
