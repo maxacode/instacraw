@@ -4,7 +4,7 @@
 What it does: 
 From a list of users in a file it gets all of their post's URL's and LIKE's for those POSTs. 
 
-Tested on: Python 3.5 - 3.6: Ubuntu, Windows 10.
+Tested on: Python 3.5 - 3.6: Ubuntu.
 
 
 InstaCrawl Info/Instructions:
@@ -12,8 +12,8 @@ InstaCrawl Info/Instructions:
 2) Run manually OR
 3) Schedule via CHRON/Scheduler
 4) Sight back and drink some coffee. 
-5) Takes about 2 seconds (Depending on quality of USERNAMES and how many posts) to get URL and LIKES for each user. 
-            ex: 5 users * 10 pics each = 50total * 2sec = 100sec  or 1min 40sec. 
+5) Takes about .6 seconds to get URL and LIKES for each user. 
+            
 
 
 
@@ -31,6 +31,7 @@ Features:
 
 TODO:
 
+0) Better Loging and error handing. 
 0) OPTIMIZE for SPEED LIKE CRAZY
 0) MAKE DEF's
 1) Get # of views for each video. 
