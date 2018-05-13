@@ -12,7 +12,7 @@ InstaCrawl Info/Instructions:
 2) Run manually OR
 3) Schedule via CHRON/Scheduler
 4) Sight back and drink some coffee. 
-5) Takes about .6 seconds to get URL and LIKES for each user. 
+5) Takes about .6 seconds to get URL and LIKES for each user (Depending on Machine Speed and Internet Bandwith)
             
 
 
@@ -24,7 +24,9 @@ Features:
 3) Create file under Users folder with current date. -Adds on if run same day multiple times. 
 4) No duplicates in master databse or user file.
 5) Gets all user's post URL's for all users in file.
-6) Logs most ERRORs to ErrorLOGS Folder to todays date file. 
+6) Logs most ERRORs to ErrorLOGS Folder with date as file name. 
+7) LogFile in current directory that gives overall status after a run.
+8) If Error occurs during link or like grabbing then it retries it several times until sucessfull. 
 
 
 
