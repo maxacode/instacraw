@@ -1,6 +1,9 @@
 # instacraw
 #Max Derevencha - 04/20/2018
 
+Why do I need this:
+This is great for personal anaalytics but this was desinged for Social Media Marketers. They requested a program to do this so they can help their clients market themselvs. 
+
 What it does: 
 From a list of users in a file it gets all of their post's URL's and LIKE's for those POSTs. 
 
